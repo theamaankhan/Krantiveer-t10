@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Krantiveer Cricket League — Banda T10 | Season 4</title>
+  <meta name="description" content="Official Krantiveer Cricket League Banda T10 Season 4 (2026). Player and franchise registration portal for Banda, Uttar Pradesh.">
+  <link rel="canonical" href="https://krantiveer-t10.com/">
+  <meta property="og:title" content="Krantiveer Cricket League — Banda T10">
+  <meta property="og:description" content="Season 4 • 2026 • Player & Franchise Registration">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://krantiveer-t10.com/">
+  <meta property="og:image" content="https://krantiveer-t10.com/logo.png">
+  <link rel="icon" href="logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page-shell">
+  <div class="noise" aria-hidden="true"></div>
+  <header class="topbar" id="siteHeader">
+    <a class="brand" href="#home" aria-label="Krantiveer Cricket League home">
+      <span class="brand-mark"><img src="logo.png" alt="Krantiveer Cricket League logo"></span>
+      <span class="brand-copy"><strong>KRANTIVEER</strong><em>CRICKET LEAGUE</em><small>BANDA T10</small></span>
+    </a>
+    <button class="mobile-menu" id="mobileMenu" aria-label="Open navigation" aria-expanded="false">☰</button>
+    <nav id="mainNav">
+      <a href="#home">Home</a><a href="#about">About</a><a href="#teams">Teams</a><a href="#registration">Registration</a><a href="#contact">Contact</a>
+    </nav>
+    <a class="nav-cta" href="#registration">Register Now <span>↗</span></a>
+  </header>
+
+  <main id="home">
+    <section class="hero">
+      <div class="hero-stadium" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <div class="hero-copy reveal">
+        <div class="hero-pill"><span class="live-dot"></span> SEASON 4 <b>•</b> 2026 <b>•</b> BANDA, UTTAR PRADESH</div>
+        <div class="hero-kicker">THE BATTLE OF BANDA</div>
+        <h1>KRANTIVEER <span>CRICKET LEAGUE</span></h1>
+        <div class="banda"><span>BANDA</span> <b>T10</b></div>
+        <p class="hero-sub">PLAY <b>•</b> REPRESENT <b>•</b> RISE</p>
+        <p class="hero-note">A stage for local talent, fierce competition and the next generation of cricket.</p>
+        <div class="hero-actions">
+          <a class="hero-btn primary-hero" href="#registration">START REGISTRATION <span>→</span></a>
+          <a class="hero-btn ghost-hero" href="#teams">EXPLORE 12 TEAMS <span>↓</span></a>
+        </div>
+      </div>
+      <div class="hero-badge reveal delay-1">
+        <div class="badge-ring"><img src="logo.png" alt="Banda T10 tournament emblem"></div>
+        <span>OFFICIAL</span><strong>SEASON 4</strong><small>2026</small>
+      </div>
+      <div class="hero-player player-left" aria-hidden="true">🏏</div>
+      <div class="hero-player player-right" aria-hidden="true">🏏</div>
+      <div class="hero-scroll">SCROLL TO EXPLORE <span>↓</span></div>
+    </section>
+
+    <section class="stats-strip" id="about">
+      <div class="stat reveal"><strong data-count="12">0</strong><span>POWERFUL TEAMS</span></div>
+      <div class="stat reveal delay-1"><strong data-count="1000" data-suffix="+">0</strong><span>PLAYERS EXPECTED</span></div>
+      <div class="stat reveal delay-2"><strong data-count="1">0</strong><span>CHAMPION</span></div>
+      <div class="stat reveal delay-3"><strong>₹500</strong><span>PLAYER REGISTRATION</span></div>
+    </section>
+
+    <section class="section intro-section">
+      <div class="section-copy reveal">
+        <div class="section-label">MORE THAN A GAME</div>
+        <h2>ONE LEAGUE.<br><span>ONE BANDA.</span></h2>
+        <p>Krantiveer Cricket League — Banda T10 brings players, teams and franchise owners together for a competitive local cricket experience.</p>
+        <div class="feature-row"><div><b>01</b><span>Discover<br>Talent</span></div><div><b>02</b><span>Build<br>Teams</span></div><div><b>03</b><span>Play<br>Fearlessly</span></div></div>
+      </div>
+      <div class="about-card reveal delay-1"><div class="about-glow"></div><div class="about-ball">🏏</div><strong>REGISTER • REPRESENT • RISE</strong><p>Player registrations are collected for tournament management and auction preparation. Franchise registrations are handled separately.</p><a href="#registration">Choose your path →</a></div>
+    </section>
+
+    <section class="team-section" id="teams">
+      <div class="section-heading reveal">
+        <div class="section-label">MEET THE CONTENDERS</div>
+        <h2>12 POWERFUL <span>TEAMS</span></h2>
+        <p>Explore the official team lineup for Krantiveer Banda T10.</p>
+      </div>
+      <div class="team-tools reveal delay-1">
+        <div class="search-box"><span>⌕</span><input id="teamSearch" type="search" placeholder="Search a team..."></div>
+        <div class="team-count"><b id="teamVisible">12</b> / 12 teams</div>
+      </div>
+      <div class="team-grid" id="teamGrid"></div>
+      <div class="empty-teams hidden" id="emptyTeams">No team matches your search.</div>
+    </section>
+
+    <section class="registration-wrap" id="registration">
+      <div class="registration-title reveal">
+        <div class="section-label">OFFICIAL REGISTRATION PORTAL</div>
+        <h2>CHOOSE YOUR <span>REGISTRATION</span></h2>
+        <p>Pick the right form below — every submission is stored securely in our official Google Sheet.</p>
+      </div>
+      <div class="registration-switch reveal delay-1" role="tablist" aria-label="Registration type">
+        <button class="registration-tab active" type="button" data-registration="player" role="tab" aria-selected="true"><span>🏏</span><b>PLAYER REGISTRATION</b><small>Register as a player • ₹500</small></button>
+        <button class="registration-tab" type="button" data-registration="franchise" role="tab" aria-selected="false"><span>🏆</span><b>FRANCHISE REGISTRATION</b><small>Owner / representative enquiry</small></button>
+      </div>
+
+      <div id="playerRegistration" class="registration-panel">
+        <div class="form-intro"><div class="form-intro-icon">🏏</div><div><h3>PLAYER REGISTRATION</h3><p>Complete your profile on the official Google Form. Team allocation is handled separately.</p></div><div class="fee-chip">₹500 <small>FEE</small></div></div>
+
+        <div class="redirect-card">
+          <div class="redirect-copy">
+            <h4>What you'll need before you start</h4>
+            <ul class="redirect-list">
+              <li><b>Personal &amp; ID details</b> — name, father's name, date of birth, address and ID proof</li>
+              <li><b>Cricket profile</b> — player type, batting style, bowling arm &amp; style</li>
+              <li><b>T-shirt details</b> — kit size, lower size, name and jersey number</li>
+              <li><b>Uploads</b> — your photograph and ID card (front &amp; back)</li>
+              <li><b>Payment</b> — ₹500 via UPI / PhonePe QR, plus your UTR / transaction ID</li>
+            </ul>
+            <div class="privacy-note">🔒 <span>Your ID information is used only for tournament verification and management.</span></div>
+            <a class="primary redirect-cta" id="playerFormLink" href="https://script.google.com/macros/s/AKfycby400ZIuEnq0GcqMUdLJToYK7Mo3snfJ6gVCGoUkoCgLuJvyAEber1ofPzRACI2yLLEgA/exec" target="_blank" rel="noopener">OPEN PLAYER REGISTRATION FORM <span>↗</span></a>
+            <p class="redirect-note">You'll be redirected to the official Krantiveer Banda T10 Google Form in a new tab. Sign in with a Google account to attach your photo and ID documents — responses are saved straight into our tournament Google Sheet.</p>
+          </div>
+          <div class="redirect-payment">
+            <div class="payment-kicker">STEP 1 · PAY THE FEE</div>
+            <div class="payment-amount">₹500</div>
+            <p>Scan the QR with any UPI app and pay exactly ₹500. Note your UTR / Transaction ID — you'll enter it inside the form.</p>
+            <div class="payment-steps">
+              <span><b>01</b> Scan QR</span>
+              <span><b>02</b> Pay ₹500</span>
+              <span><b>03</b> Open form &amp; enter UTR</span>
+            </div>
+            <button class="qr-card" type="button" id="qrOpen" aria-label="Open payment QR code">
+              <span class="qr-badge">SCAN & PAY</span>
+              <img src="payment-qr.jpeg" alt="PhonePe QR code for ₹500 player registration" loading="lazy">
+              <span class="qr-expand">Click to enlarge ↗</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="franchiseRegistration" class="registration-panel hidden">
+        <div class="form-intro"><div class="form-intro-icon">🏆</div><div><h3>FRANCHISE REGISTRATION</h3><p>Register your franchise, team ownership or management interest via the official Google Form.</p></div><div class="fee-chip dark">ENQUIRE <small>WITH US</small></div></div>
+
+        <div class="redirect-card single">
+          <div class="redirect-copy">
+            <h4>What you'll need before you start</h4>
+            <ul class="redirect-list">
+              <li><b>Franchise details</b> — franchise name and owner / representative name</li>
+              <li><b>Contact info</b> — mobile, WhatsApp, email and full address</li>
+              <li><b>ID proof</b> — type, number and upload (front &amp; back)</li>
+              <li><b>Experience</b> — cricket or team management background (optional)</li>
+            </ul>
+            <div class="privacy-note">🔒 <span>Franchise documents are used only for tournament verification and management.</span></div>
+            <a class="primary redirect-cta" id="franchiseFormLink" href="https://script.google.com/macros/s/AKfycbwnd_6pnnXCQI1MWAdJSE632ZAyJcjfrRvkUZ5623T0kh9qmB_1drinCInmjeepTuNlfg/exec" target="_blank" rel="noopener">OPEN FRANCHISE REGISTRATION FORM <span>↗</span></a>
+            <p class="redirect-note">You'll be redirected to the official Krantiveer Banda T10 Google Form in a new tab. Sign in with a Google account to attach your ID documents — responses are saved straight into our tournament Google Sheet.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="qr-modal" id="qrModal">
+      <div class="qr-modal-inner">
+        <button class="qr-close" id="qrClose" aria-label="Close QR preview">✕</button>
+        <img src="payment-qr.jpeg" alt="PhonePe QR code for ₹500 player registration — full size">
+        <p class="photo-credit" style="text-align:center;margin-top:8px">Scan with any UPI app · Pay exactly ₹500</p>
+      </div>
+    </div>
+
+    <section class="trust-section">
+      <div class="trust-card reveal"><span>✓</span><div><strong>Official Portal</strong><small>Direct tournament registration system.</small></div></div>
+      <div class="trust-card reveal delay-1"><span>🔒</span><div><strong>Private Documents</strong><small>ID documents are not displayed publicly.</small></div></div>
+      <div class="trust-card reveal delay-2"><span>₹</span><div><strong>Secure Payment</strong><small>₹500 player fee via PhonePe / UPI QR.</small></div></div>
+    </section>
+  </main>
+
+  <footer id="contact">
+    <div class="footer-brand"><img src="logo.png" alt="Krantiveer Cricket League logo"><div><strong>KRANTIVEER CRICKET LEAGUE</strong><span>Banda, Uttar Pradesh • krantiveer-t10.com</span></div></div>
+    <div class="quote">“Different Names, Same Spirit — A Stronger Banda”</div>
+    <div class="social">#KCLBandaT10<br><small class="photo-credit">Stadium / player imagery: Unsplash & Pexels</small></div>
+  </footer>
+</div>
+
+<script>
+  // Official Google Form links — generated by google-apps-script/CreateForms.gs.
+  // Run that script once in script.google.com, then paste the two "share this" links here.
+  const PLAYER_FORM_URL = "https://docs.google.com/forms/d/1h0VZ8uX5JUB0jrfTtBS2-NXbhu49bHlf0WHASDhP4m8/edit";
+  const FRANCHISE_FORM_URL = "https://docs.google.com/forms/d/1AawRvhEEsBc24DTqhDj2UT109zLu8FEJt2WS5lUDtTY/edit";
+</script>
+<script src="app.js"></script>
+</body>
+</html>
