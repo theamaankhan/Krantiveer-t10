@@ -91,7 +91,7 @@
       <div class="registration-title reveal">
         <div class="section-label">OFFICIAL REGISTRATION PORTAL</div>
         <h2>CHOOSE YOUR <span>REGISTRATION</span></h2>
-        <p>Pick the right form below — every submission is stored securely in our official Google Sheet.</p>
+        <p>Use the dedicated form for players or franchise owners.</p>
       </div>
       <div class="registration-switch reveal delay-1" role="tablist" aria-label="Registration type">
         <button class="registration-tab active" type="button" data-registration="player" role="tab" aria-selected="true"><span>🏏</span><b>PLAYER REGISTRATION</b><small>Register as a player • ₹500</small></button>
@@ -99,67 +99,120 @@
       </div>
 
       <div id="playerRegistration" class="registration-panel">
-        <div class="form-intro"><div class="form-intro-icon">🏏</div><div><h3>PLAYER REGISTRATION</h3><p>Complete your profile on the official Google Form. Team allocation is handled separately.</p></div><div class="fee-chip">₹500 <small>FEE</small></div></div>
-
-        <div class="redirect-card">
-          <div class="redirect-copy">
-            <h4>What you'll need before you start</h4>
-            <ul class="redirect-list">
-              <li><b>Personal &amp; ID details</b> — name, father's name, date of birth, address and ID proof</li>
-              <li><b>Cricket profile</b> — player type, batting style, bowling arm &amp; style</li>
-              <li><b>T-shirt details</b> — kit size, lower size, name and jersey number</li>
-              <li><b>Uploads</b> — your photograph and ID card (front &amp; back)</li>
-              <li><b>Payment</b> — ₹500 via UPI / PhonePe QR, plus your UTR / transaction ID</li>
-            </ul>
-            <div class="privacy-note">🔒 <span>Your ID information is used only for tournament verification and management.</span></div>
-            <a class="primary redirect-cta" id="playerFormLink" href="PLAYER_FORM_URL" target="_blank" rel="noopener">OPEN PLAYER REGISTRATION FORM <span>↗</span></a>
-            <p class="redirect-note">You'll be redirected to the official Krantiveer Banda T10 Google Form in a new tab. Sign in with a Google account to attach your photo and ID documents — responses are saved straight into our tournament Google Sheet.</p>
-          </div>
-          <div class="redirect-payment">
-            <div class="payment-kicker">STEP 1 · PAY THE FEE</div>
-            <div class="payment-amount">₹500</div>
-            <p>Scan the QR with any UPI app and pay exactly ₹500. Note your UTR / Transaction ID — you'll enter it inside the form.</p>
-            <div class="payment-steps">
-              <span><b>01</b> Scan QR</span>
-              <span><b>02</b> Pay ₹500</span>
-              <span><b>03</b> Open form &amp; enter UTR</span>
-            </div>
-            <button class="qr-card" type="button" id="qrOpen" aria-label="Open payment QR code">
-              <span class="qr-badge">SCAN & PAY</span>
-              <img src="payment-qr.jpeg" alt="PhonePe QR code for ₹500 player registration" loading="lazy">
-              <span class="qr-expand">Click to enlarge ↗</span>
-            </button>
-          </div>
+        <div class="form-intro"><div class="form-intro-icon">🏏</div><div><h3>PLAYER REGISTRATION</h3><p>Complete your profile in four quick steps. Team allocation is handled separately.</p></div><div class="fee-chip">₹500 <small>FEE</small></div></div>
+        <div class="steps" id="playerSteps" aria-label="Player registration progress">
+          <div class="step active"><b>1</b><span>Player Details</span></div><div class="step"><b>2</b><span>Cricket Profile</span></div><div class="step"><b>3</b><span>T-Shirt Details</span></div><div class="step"><b>4</b><span>Documents</span></div>
         </div>
+        <form id="playerForm">
+          <div class="form-step active" data-step="1">
+            <div class="form-head"><span>01</span><div><h3>PLAYER DETAILS</h3><p>Personal and identity information</p></div><i>Step 1 of 4</i></div>
+            <div class="form-grid">
+              <label>Player Name *<input name="fullName" required placeholder="Enter full name"></label>
+              <label>Father's Name *<input name="fatherName" required placeholder="Enter father's name"></label>
+              <label>Date of Birth *<input name="dob" type="date" required></label>
+              <label>ID Proof Type *<select name="idProofType" required><option value="">Select proof</option><option>Aadhaar</option><option>Driving Licence</option><option>Voter ID</option><option>Passport</option><option>Bank Passbook</option></select></label>
+              <label>ID Proof Number *<input name="idProofNumber" required placeholder="Enter ID number"></label>
+              <label>Player District *<select name="district" required><option value="">Select district</option><option>Banda</option><option>Hamirpur</option><option>Chitrakoot</option><option>Mahoba</option><option>Other</option></select></label>
+              <label class="wide">Address *<textarea name="address" required rows="2" placeholder="Enter complete address"></textarea></label>
+              <label>Mobile *<input name="mobile" required inputmode="numeric" pattern="[0-9]{10}" maxlength="10" placeholder="10-digit mobile"></label>
+              <label>WhatsApp<input name="whatsapp" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" placeholder="Optional"></label>
+              <label>Email<input name="email" type="email" placeholder="Optional"></label>
+            </div>
+            <div class="privacy-note">🔒 <span>Your ID information is used only for tournament verification and management.</span></div>
+            <button type="button" class="primary next">Next: Cricket Profile <span>→</span></button>
+          </div>
+
+          <div class="form-step" data-step="2">
+            <div class="form-head"><span>02</span><div><h3>CRICKET PROFILE</h3><p>Tell us how you play</p></div><i>Step 2 of 4</i></div>
+            <div class="form-grid">
+              <label>Player Type *<select name="role" required><option value="">Select player type</option><option>Bowler</option><option>Batsman</option><option>Batting All-rounder</option><option>Bowling All-rounder</option><option>Wicketkeeper</option></select></label>
+              <label>Batting Style *<select name="batting" required><option value="">Select batting style</option><option>Left Hand</option><option>Right Hand</option></select></label>
+              <label>Bowling Arm *<select name="bowlingArm" required><option value="">Select bowling arm</option><option>Left Hand</option><option>Right Hand</option><option>Does not bowl</option></select></label>
+              <label>Bowling Style<select name="bowling"><option value="">Select bowling style</option><option>Medium Fast</option><option>Spin</option></select></label>
+              <label>Jersey Number Preference<input name="jersey" type="number" min="0" max="99" placeholder="0–99"></label>
+              <label class="wide">Previous Cricket Experience<textarea name="experience" rows="4" placeholder="Club, school, district or local tournament experience"></textarea></label>
+            </div>
+            <div class="button-row"><button type="button" class="secondary prev">← Back</button><button type="button" class="primary next">Next: T-Shirt Details <span>→</span></button></div>
+          </div>
+
+          <div class="form-step" data-step="3">
+            <div class="form-head"><span>03</span><div><h3>T-SHIRT DETAILS</h3><p>Information required for tournament kit</p></div><i>Step 3 of 4</i></div>
+            <div class="form-grid">
+              <label>T-Shirt Size *<select name="tshirtSize" required><option value="">Select size</option><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option><option>3XL</option><option>4XL</option></select></label>
+              <label>Lower Size *<select name="lowerSize" required><option value="">Select size</option><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option><option>3XL</option><option>4XL</option></select></label>
+              <label>Name on T-Shirt *<input name="tshirtName" required maxlength="20" placeholder="e.g. AMAN"></label>
+              <label>T-Shirt Back Number *<input name="tshirtNumber" type="number" min="0" max="99" required placeholder="e.g. 10"></label>
+            </div>
+            <div class="mini-note"><span>ℹ</span> Team selection is not requested here. Team allocation will be managed separately by the tournament.</div>
+            <div class="button-row"><button type="button" class="secondary prev">← Back</button><button type="button" class="primary next">Next: Documents <span>→</span></button></div>
+          </div>
+
+          <div class="form-step" data-step="4">
+            <div class="form-head"><span>04</span><div><h3>DOCUMENTS & PAYMENT</h3><p>Upload your files and submit</p></div><i>Step 4 of 4</i></div>
+            <div class="upload-grid">
+              <label class="upload-card"><span class="upload-icon">📸</span><b>Photograph for Auction *</b><input name="playerPhoto" id="photo" type="file" accept="image/jpeg,image/png,image/webp" data-label="Player photograph" required><small>JPG / PNG / WebP • max 3 MB</small><em class="file-name">No file selected</em></label>
+              <label class="upload-card"><span class="upload-icon">🪪</span><b>ID Card — Front *</b><input name="idFront" id="idFront" type="file" accept="image/jpeg,image/png,application/pdf" data-label="ID card front" required><small>JPG / PNG / PDF • max 5 MB</small><em class="file-name">No file selected</em></label>
+              <label class="upload-card"><span class="upload-icon">🪪</span><b>ID Card — Back *</b><input name="idBack" id="idBack" type="file" accept="image/jpeg,image/png,application/pdf" data-label="ID card back" required><small>JPG / PNG / PDF • max 5 MB</small><em class="file-name">No file selected</em></label>
+            </div>
+            <div class="manual-payment">
+              <div class="manual-payment-copy">
+                <div class="payment-kicker">PLAYER REGISTRATION FEE</div>
+                <div class="payment-amount">₹500</div>
+                <h4>Pay securely using the official PhonePe QR</h4>
+                <p>Scan the QR with your UPI app and pay exactly ₹500. After payment, enter the UTR / Transaction ID below so the tournament team can verify your payment.</p>
+                <div class="payment-steps">
+                  <span><b>01</b> Scan QR</span>
+                  <span><b>02</b> Pay ₹500</span>
+                  <span><b>03</b> Enter UTR</span>
+                </div>
+                <label class="utr-field">UTR / Transaction ID *
+                  <input name="utr" id="utr" required minlength="6" maxlength="50" autocomplete="off" placeholder="Enter UTR / transaction ID">
+                  <small>Use the transaction/UTR number shown in your UPI payment receipt.</small>
+                </label>
+              </div>
+              <button class="qr-card" type="button" id="qrOpen" aria-label="Open payment QR code">
+                <span class="qr-badge">SCAN & PAY</span>
+                <img src="payment-qr.jpeg" alt="PhonePe QR code for ₹500 player registration" loading="lazy">
+                <span class="qr-expand">Click to enlarge ↗</span>
+              </button>
+            </div>
+            <label class="check"><input type="checkbox" name="declaration1" required> I confirm that the information provided is true and accurate to the best of my knowledge.</label>
+            <label class="check"><input type="checkbox" name="declaration2" required> I understand that false or misleading information may result in cancellation of my registration.</label>
+            <div class="button-row"><button type="button" class="secondary prev">← Back</button><button id="playerSubmit" class="primary submit" type="submit">SUBMIT REGISTRATION <span>→</span></button></div>
+            <div id="playerStatus" class="status" role="status" aria-live="polite"></div>
+          </div>
+        </form>
+        <div id="playerSuccess" class="success hidden"><div class="success-icon">✓</div><div class="success-kicker">REGISTRATION RECEIVED</div><h2>YOU'RE IN THE <span>LINE-UP.</span></h2><p>Your registration and UTR have been submitted successfully. Payment will be verified by the tournament team.</p><div class="reg-id" id="playerRegId"></div><p class="muted">Save this Registration ID for future reference.</p><div class="verification-pill">✓ UTR submitted • Payment verification pending</div><button id="playerAgain" class="secondary" type="button">Register Another Player</button></div>
       </div>
 
       <div id="franchiseRegistration" class="registration-panel hidden">
-        <div class="form-intro"><div class="form-intro-icon">🏆</div><div><h3>FRANCHISE REGISTRATION</h3><p>Register your franchise, team ownership or management interest via the official Google Form.</p></div><div class="fee-chip dark">ENQUIRE <small>WITH US</small></div></div>
-
-        <div class="redirect-card single">
-          <div class="redirect-copy">
-            <h4>What you'll need before you start</h4>
-            <ul class="redirect-list">
-              <li><b>Franchise details</b> — franchise name and owner / representative name</li>
-              <li><b>Contact info</b> — mobile, WhatsApp, email and full address</li>
-              <li><b>ID proof</b> — type, number and upload (front &amp; back)</li>
-              <li><b>Experience</b> — cricket or team management background (optional)</li>
-            </ul>
+        <div class="form-intro"><div class="form-intro-icon">🏆</div><div><h3>FRANCHISE REGISTRATION</h3><p>Register your franchise, team ownership or management interest.</p></div><div class="fee-chip dark">ENQUIRE <small>WITH US</small></div></div>
+        <form id="franchiseForm">
+          <div class="form-step active">
+            <div class="form-head"><span>01</span><div><h3>FRANCHISE DETAILS</h3><p>Owner and representative information</p></div><i>Complete in one step</i></div>
+            <div class="form-grid">
+              <label>Franchise Name *<input name="franchiseName" required placeholder="Enter franchise name"></label>
+              <label>Owner / Representative Name *<input name="ownerName" required placeholder="Enter full name"></label>
+              <label>Mobile *<input name="mobile" required inputmode="numeric" pattern="[0-9]{10}" maxlength="10" placeholder="10-digit mobile"></label>
+              <label>WhatsApp<input name="whatsapp" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" placeholder="Optional"></label>
+              <label>Email<input name="email" type="email" placeholder="Optional"></label>
+              <label>District / City *<input name="district" required placeholder="Enter district or city"></label>
+              <label class="wide">Full Address *<textarea name="address" required rows="2" placeholder="Enter complete address"></textarea></label>
+              <label>ID Proof Type *<select name="idProofType" required><option value="">Select proof</option><option>Aadhaar</option><option>Driving Licence</option><option>Voter ID</option><option>Passport</option><option>Bank Passbook</option></select></label>
+              <label>ID Proof Number *<input name="idProofNumber" required placeholder="Enter ID number"></label>
+              <label>Cricket / Team Management Experience<textarea name="experience" rows="2" placeholder="Optional"></textarea></label>
+              <label class="upload-card compact"><span class="upload-icon">🪪</span><b>ID Proof — Front *</b><input name="idFront" id="franchiseIdFront" type="file" accept="image/jpeg,image/png,application/pdf" data-label="ID proof front" required><small>JPG / PNG / PDF • max 5 MB</small><em class="file-name">No file selected</em></label>
+              <label class="upload-card compact"><span class="upload-icon">🪪</span><b>ID Proof — Back *</b><input name="idBack" id="franchiseIdBack" type="file" accept="image/jpeg,image/png,application/pdf" data-label="ID proof back" required><small>JPG / PNG / PDF • max 5 MB</small><em class="file-name">No file selected</em></label>
+            </div>
             <div class="privacy-note">🔒 <span>Franchise documents are used only for tournament verification and management.</span></div>
-            <a class="primary redirect-cta" id="franchiseFormLink" href="FRANCHISE_FORM_URL" target="_blank" rel="noopener">OPEN FRANCHISE REGISTRATION FORM <span>↗</span></a>
-            <p class="redirect-note">You'll be redirected to the official Krantiveer Banda T10 Google Form in a new tab. Sign in with a Google account to attach your ID documents — responses are saved straight into our tournament Google Sheet.</p>
+            <label class="check"><input type="checkbox" name="declaration" required> I confirm that the information provided is true and I agree to follow the rules and regulations of Krantiveer Cricket League – Banda T10.</label>
+            <button id="franchiseSubmit" class="primary" type="submit">SUBMIT FRANCHISE REGISTRATION <span>→</span></button>
+            <div id="franchiseStatus" class="status" role="status" aria-live="polite"></div>
           </div>
-        </div>
+        </form>
+        <div id="franchiseSuccess" class="success hidden"><div class="success-icon">✓</div><div class="success-kicker">FRANCHISE ENQUIRY RECEIVED</div><h2>THANKS FOR <span>STEPPING UP.</span></h2><p>Your franchise details have been submitted. Our tournament team will contact you for the next steps.</p><div class="reg-id" id="franchiseRegId"></div><p class="muted">Save this Registration ID for future reference.</p><button id="franchiseAgain" class="secondary" type="button">Back to Registration</button></div>
       </div>
     </section>
-
-    <div class="qr-modal" id="qrModal">
-      <div class="qr-modal-inner">
-        <button class="qr-close" id="qrClose" aria-label="Close QR preview">✕</button>
-        <img src="payment-qr.jpeg" alt="PhonePe QR code for ₹500 player registration — full size">
-        <p class="photo-credit" style="text-align:center;margin-top:8px">Scan with any UPI app · Pay exactly ₹500</p>
-      </div>
-    </div>
 
     <section class="trust-section">
       <div class="trust-card reveal"><span>✓</span><div><strong>Official Portal</strong><small>Direct tournament registration system.</small></div></div>
@@ -176,10 +229,8 @@
 </div>
 
 <script>
-  // Official Google Form links — generated by google-apps-script/CreateForms.gs.
-  // Run that script once in script.google.com, then paste the two "share this" links here.
-  const PLAYER_FORM_URL = "PLAYER_FORM_URL";
-  const FRANCHISE_FORM_URL = "FRANCHISE_FORM_URL";
+  // Google Apps Script Web App endpoint. Submissions use a hidden form + postMessage to avoid browser CORS issues.
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzT0nC_u1VIPzUW_735-NXswkXwKCQeETUkT6fwjlFY_zEqsiVzGSbuEINecdbbprdErw/exec";
 </script>
 <script src="app.js"></script>
 </body>

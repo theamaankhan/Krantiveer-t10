@@ -20,7 +20,7 @@ function renderTeams(filter='') {
   const grid = $('#teamGrid');
   const q = filter.trim().toLowerCase();
   const visible = TEAMS.filter(([name]) => name.toLowerCase().includes(q));
-  grid.innerHTML = visible.map(([name,file]) => {
+  grid.innerHTML = visible.map(([name,file], i) => {
     const original = TEAMS.findIndex(t => t[0] === name) + 1;
     return `<article class="team-card reveal" tabindex="0" data-team="${name.toLowerCase()}">
       <div class="team-top"><span>${String(original).padStart(2,'0')}</span><i>OFFICIAL</i></div>
@@ -75,44 +75,239 @@ function setupRegistrationTabs(){
   $$('.registration-tab').forEach(btn=>btn.addEventListener('click',()=>showRegistration(btn.dataset.registration)));
 }
 
+const playerSteps = $$('#playerForm .form-step');
+const playerIndicators = $$('#playerSteps .step');
+let playerCurrent=0;
+function showPlayerStep(i){
+  playerCurrent=i;
+  playerSteps.forEach((s,n)=>s.classList.toggle('active',n===i));
+  playerIndicators.forEach((s,n)=>s.classList.toggle('active',n<=i));
+  $('#playerSteps').style.setProperty('--progress',`${(i/(playerSteps.length-1))*100}%`);
+  $('#registration').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function validContainer(container){for(const f of container.querySelectorAll('input,select,textarea')){if(!f.checkValidity()){f.reportValidity();return false;}}return true;}
+function b64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]);r.onerror=rej;r.readAsDataURL(file);});}
+function fileCheck(el,mb){const f=el.files[0];if(!f)throw new Error('Please upload '+(el.dataset.label||el.name)+'.');if(f.size>mb*1024*1024)throw new Error((el.dataset.label||el.name)+' must be '+mb+' MB or smaller.');}
+function setupFiles(){
+  $$('input[type=file]').forEach(input=>input.addEventListener('change',()=>{
+    const name=input.files[0]?.name||'No file selected'; const box=input.closest('.upload-card');
+    if(box) $('.file-name',box).textContent=name;
+  }));
+}
+
+function resetPlayerForm(){
+  $('#playerForm').reset(); playerCurrent=0; showPlayerStep(0);
+  $('#playerSuccess').classList.add('hidden'); $('#playerForm').classList.remove('hidden'); $('#playerSteps').classList.remove('hidden'); $('#playerStatus').textContent='';
+  $('#playerRegistration').querySelector('.form-intro').classList.remove('hidden');
+  $('#utr').value='';
+  $$('.file-name','#playerForm').forEach(x=>x.textContent='No file selected');
+  $('#playerSubmit').disabled=false;
+}
+
+
+function submitToAppsScript(data){
+  return new Promise((resolve,reject)=>{
+    if(!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes('PASTE_YOUR')){
+      reject(new Error('Backend URL is not connected yet.'));
+      return;
+    }
+
+    const frameName='kv-submit-frame-'+Date.now()+'-'+Math.random().toString(36).slice(2);
+    const iframe=document.createElement('iframe');
+    iframe.name=frameName;
+    iframe.title='Registration submission';
+    iframe.setAttribute('aria-hidden','true');
+    iframe.style.cssText='position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;border:0;opacity:0;pointer-events:none;';
+    document.body.appendChild(iframe);
+
+    const form=document.createElement('form');
+    form.method='POST';
+    form.action=APPS_SCRIPT_URL;
+    form.target=frameName;
+    form.enctype='application/x-www-form-urlencoded';
+    form.encoding='application/x-www-form-urlencoded';
+    form.style.display='none';
+
+    Object.entries(data).forEach(([key,value])=>{
+      if(value===undefined || value===null) return;
+      const input=document.createElement('input');
+      input.type='hidden';
+      input.name=key;
+      input.value=String(value);
+      form.appendChild(input);
+    });
+
+    let settled=false;
+    const cleanup=()=>{
+      window.removeEventListener('message',onMessage);
+      clearTimeout(timer);
+      form.remove();
+      iframe.remove();
+    };
+    const finish=(fn,value)=>{
+      if(settled) return;
+      settled=true;
+      cleanup();
+      fn(value);
+    };
+    const onMessage=(event)=>{
+      const msg=event.data;
+      if(event.source !== iframe.contentWindow) return;
+      if(!msg || msg.__kvRegistrationResponse!==true) return;
+      if(msg.ok) finish(resolve,msg);
+      else finish(reject,new Error(msg.message||'Registration submission failed.'));
+    };
+    const timer=setTimeout(()=>{
+      finish(reject,new Error('The registration server did not respond in time. Please try again.'));
+    },90000);
+
+    window.addEventListener('message',onMessage);
+    document.body.appendChild(form);
+    form.submit();
+  });
+}
+
+function setupPlayerForm(){
+  $$('#playerForm .next').forEach(b=>b.onclick=()=>{
+    if(validContainer(playerSteps[playerCurrent])&&playerCurrent<playerSteps.length-1)showPlayerStep(playerCurrent+1);
+  });
+  $$('#playerForm .prev').forEach(b=>b.onclick=()=>{
+    if(playerCurrent>0)showPlayerStep(playerCurrent-1);
+  });
+
+  $('#playerForm').addEventListener('submit',async e=>{
+    e.preventDefault();
+    if(!validContainer(playerSteps[playerCurrent])) return;
+
+    const button=$('#playerSubmit'), status=$('#playerStatus');
+    try{
+      const photo=$('#photo'),front=$('#idFront'),back=$('#idBack');
+      fileCheck(photo,3); fileCheck(front,5); fileCheck(back,5);
+
+      const utr=String($('#utr').value||'').trim();
+      if(!/^[A-Za-z0-9][A-Za-z0-9 ._\/-]{5,49}$/.test(utr)){
+        throw new Error('Please enter a valid UTR / transaction ID.');
+      }
+
+      if(!APPS_SCRIPT_URL||APPS_SCRIPT_URL.includes('PASTE_YOUR')){
+        throw new Error('Backend URL is not connected yet.');
+      }
+
+      button.disabled=true;
+      status.textContent='Preparing your registration documents…';
+
+      const d=Object.fromEntries(new FormData($('#playerForm')).entries());
+      d.formType='player';
+      d.utr=utr;
+
+      d.playerPhotoBase64=await b64(photo.files[0]);
+      d.playerPhotoName=photo.files[0].name;
+      d.playerPhotoMimeType=photo.files[0].type;
+
+      d.idFrontBase64=await b64(front.files[0]);
+      d.idFrontName=front.files[0].name;
+      d.idFrontMimeType=front.files[0].type;
+
+      d.idBackBase64=await b64(back.files[0]);
+      d.idBackName=back.files[0].name;
+      d.idBackMimeType=back.files[0].type;
+
+      delete d.playerPhoto;
+      delete d.idFront;
+      delete d.idBack;
+      delete d.declaration1;
+      delete d.declaration2;
+
+      status.textContent='Submitting registration securely…';
+      const out=await submitToAppsScript(d);
+
+      $('#playerSteps').classList.add('hidden');
+      $('#playerRegistration').querySelector('.form-intro').classList.add('hidden');
+      $('#playerForm').classList.add('hidden');
+      $('#playerSuccess').classList.remove('hidden');
+      $('#playerRegId').textContent=out.registrationId;
+      status.textContent='';
+    }catch(err){
+      status.textContent='Could not submit: '+err.message;
+      button.disabled=false;
+    }
+  });
+
+  $('#playerAgain').onclick=resetPlayerForm;
+
+  const qr=$('#qrOpen');
+  if(qr) qr.addEventListener('click',()=>$('#qrModal')?.classList.add('open'));
+}
+
+function setupFranchiseForm(){
+  $('#franchiseForm').addEventListener('submit',async e=>{
+    e.preventDefault();
+    const form=e.currentTarget;
+    if(!validContainer(form))return;
+
+    const button=$('#franchiseSubmit'), status=$('#franchiseStatus');
+
+    try{
+      if(!APPS_SCRIPT_URL||APPS_SCRIPT_URL.includes('PASTE_YOUR')){
+        throw new Error('Backend URL is not connected yet.');
+      }
+
+      const front=$('#franchiseIdFront'),back=$('#franchiseIdBack');
+      fileCheck(front,5); fileCheck(back,5);
+
+      button.disabled=true;
+      status.textContent='Preparing your documents…';
+
+      const d=Object.fromEntries(new FormData(form).entries());
+      d.formType='franchise';
+      d.declaration=true;
+
+      d.idFrontBase64=await b64(front.files[0]);
+      d.idFrontName=front.files[0].name;
+      d.idFrontMimeType=front.files[0].type;
+
+      d.idBackBase64=await b64(back.files[0]);
+      d.idBackName=back.files[0].name;
+      d.idBackMimeType=back.files[0].type;
+
+      delete d.idFront;
+      delete d.idBack;
+      delete d.declaration;
+
+      status.textContent='Submitting franchise registration…';
+      const out=await submitToAppsScript(d);
+
+      form.classList.add('hidden');
+      $('#franchiseSuccess').classList.remove('hidden');
+      $('#franchiseRegId').textContent=out.registrationId;
+      status.textContent='';
+    }catch(err){
+      status.textContent='Could not submit: '+err.message;
+      button.disabled=false;
+    }
+  });
+
+  $('#franchiseAgain').onclick=()=>{
+    const form=$('#franchiseForm');
+    form.reset();
+    form.classList.remove('hidden');
+    $('#franchiseSuccess').classList.add('hidden');
+    $('#franchiseStatus').textContent='';
+    $('#franchiseSubmit').disabled=false;
+    $$('.file-name','#franchiseForm').forEach(x=>x.textContent='No file selected');
+    showRegistration('franchise');
+  };
+}
+
 function setupSearch(){
   $('#teamSearch').addEventListener('input',e=>renderTeams(e.target.value));
 }
 
-function setupQrModal(){
-  const modal=$('#qrModal'), openBtn=$('#qrOpen'), closeBtn=$('#qrClose');
-  if(openBtn) openBtn.addEventListener('click',()=>modal?.classList.add('open'));
-  if(closeBtn) closeBtn.addEventListener('click',()=>modal?.classList.remove('open'));
-  if(modal) modal.addEventListener('click',e=>{ if(e.target===modal) modal.classList.remove('open'); });
-  document.addEventListener('keydown',e=>{ if(e.key==='Escape') modal?.classList.remove('open'); });
-}
-
-// Wire the two Google Form redirect buttons and warn (instead of silently failing)
-// if someone forgets to paste the real form links from CreateForms.gs.
-function setupFormLinks(){
-  const links = [
-    { el: $('#playerFormLink'), url: typeof PLAYER_FORM_URL !== 'undefined' ? PLAYER_FORM_URL : '' },
-    { el: $('#franchiseFormLink'), url: typeof FRANCHISE_FORM_URL !== 'undefined' ? FRANCHISE_FORM_URL : '' }
-  ];
-  links.forEach(({el,url})=>{
-    if(!el) return;
-    const notConnected = !url || url.includes('PLAYER_FORM_URL') || url.includes('FRANCHISE_FORM_URL') || url.includes('PASTE_');
-    if(notConnected){
-      el.addEventListener('click', e=>{
-        e.preventDefault();
-        alert('This registration form link has not been connected yet. Run google-apps-script/CreateForms.gs and paste the generated form URL into index.html.');
-      });
-    } else {
-      el.setAttribute('href', url);
-    }
-  });
-}
-
 renderTeams();
-setupNavigation();
-setupRegistrationTabs();
-setupSearch();
-setupReveal();
-animateCounters();
-setupQrModal();
-setupFormLinks();
+setupNavigation();setupRegistrationTabs();setupFiles();setupPlayerForm();setupFranchiseForm();setupSearch();setupReveal();animateCounters();
+
+const qrClose = $('#qrClose');
+if(qrClose) qrClose.addEventListener('click',()=>$('#qrModal')?.classList.remove('open'));
+const qrModal = $('#qrModal');
+if(qrModal) qrModal.addEventListener('click',e=>{if(e.target===qrModal)qrModal.classList.remove('open')});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')$('#qrModal')?.classList.remove('open')});

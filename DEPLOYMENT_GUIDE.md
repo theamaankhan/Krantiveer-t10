@@ -1,83 +1,166 @@
-# Krantiveer Banda T10 — Website Deployment
+# Krantiveer Banda T10 — Fixed Google Sheets Deployment Guide
 
-The site now redirects visitors to two real **Google Forms** (Player Registration and
-Franchise Registration), and every response lands in a Google Sheet automatically. Follow the
-steps in order.
+## What this version fixes
 
-## 1. Create the Google Forms (one-time)
-1. Go to **https://script.new** (opens a blank Google Apps Script project). Sign in with the
-   Google account you want to **own** the forms, sheet and uploaded files.
-2. Delete the sample `function myFunction(){}` code.
-3. Open `google-apps-script/CreateForms.gs` from this project, copy the entire file, and paste
-   it into the Apps Script editor.
-4. In the function dropdown at the top (next to "Debug"), select **createKrantiveerForms**,
-   then click **Run ▶**.
-5. The first run asks you to authorize the script — click **Review permissions**, choose your
-   account, click **Advanced → Go to (project name)**, then **Allow**. This is expected for any
-   script you write yourself; Google shows this warning for all unpublished/unverified scripts.
-6. Once it finishes, open **Executions** (left sidebar, clock icon) or **View → Logs**
-   (Ctrl+Enter) — you'll see something like:
-   ```
-   SPREADSHEET (all responses): https://docs.google.com/spreadsheets/d/XXXX/edit
-   PLAYER FORM (share this):    https://docs.google.com/forms/d/e/XXXX/viewform
-   PLAYER FORM (edit):          https://docs.google.com/forms/d/XXXX/edit
-   FRANCHISE FORM (share this): https://docs.google.com/forms/d/e/YYYY/viewform
-   FRANCHISE FORM (edit):       https://docs.google.com/forms/d/YYYY/edit
-   ```
-   The same links are also saved for you inside the new Spreadsheet, on a **"Form Links"**
-   sheet — handy if you close the logs.
-7. If you ever need the links again later without re-creating the forms, run
-   **printSavedFormLinks** the same way.
+The earlier website used browser `fetch()` directly against the Google Apps Script `/exec` URL. Google Apps Script Web Apps can redirect their response to a Google-hosted origin, so the browser can report:
 
-## 2. Connect the forms to the website
-1. Open `index.html`.
-2. Find these two lines near the bottom:
-   ```html
-   const PLAYER_FORM_URL = "PLAYER_FORM_URL";
-   const FRANCHISE_FORM_URL = "FRANCHISE_FORM_URL";
-   ```
-3. Replace the placeholder text with the two **"share this"** (`docs.google.com/forms/d/e/.../viewform`)
-   links from step 1.6 above. (Optional: inside each form's editor you can click the paper-plane
-   "Send" button → the link icon → "Shorten URL" to get a shorter `forms.gle/...` link instead —
-   purely cosmetic, both work identically.)
+> Could not submit: Failed to fetch
 
-## 3. Test locally
-Open `index.html` in a browser, click **OPEN PLAYER REGISTRATION FORM** and **OPEN FRANCHISE
-REGISTRATION FORM**, and submit a dummy entry into each. Check the linked Google Sheet — you
-should see a new row appear within a few seconds in the matching tab
-("Player Registrations" / "Franchise Registrations").
+This does **not necessarily mean the Apps Script is offline**. It is commonly a browser CORS/redirect problem.
 
-## 4. Deploy the website
-Recommended simple flow:
-- Upload this folder to a static hosting provider such as Vercel or Netlify.
-- Set the production domain to `krantiveer-t10.com`.
-- Also add `www.krantiveer-t10.com` if you want the www version.
-- Use the DNS records shown by the hosting provider for your account; do not guess DNS values.
+This version changes the transport to:
 
-## 5. UPI / PhonePe payment
-There is no payment gateway integration. The player scans the QR shown on the website, pays
-₹500 manually via any UPI app, and enters the UTR / Transaction ID as a question inside the
-Google Form. Verify UTRs manually from the "Player Registrations" sheet before confirming a
-player's slot.
+**Website → hidden HTML form → Apps Script Web App → Google Sheets / Drive → postMessage → website**
 
-## 6. File uploads — important
-Google Forms file-upload questions require the person filling the form to be **signed in with
-a Google account** (any Gmail or Google Workspace account works — this is a Google requirement,
-not something this site controls). Uploaded photos/ID documents are stored in a Drive folder
-that Google Forms creates automatically inside the form owner's Drive, named after the form
-(e.g. *"Krantiveer Banda T10 — Player Registration (Season 4) (File responses)"*).
+This keeps the two-sheet setup and removes the browser `fetch()` CORS failure.
 
-## 7. Privacy note
-Player and franchise ID documents are sensitive. Keep the Google Sheet and the linked Drive
-upload folders **private** (default — don't share them publicly), and never expose their URLs
-on the public website.
+## 1. Replace the Apps Script code
 
-## 8. Main files
-- `index.html` — website (registration section links to the two Google Forms)
-- `styles.css` — design, including the registration "redirect" cards
-- `app.js` — navigation, team grid, QR preview modal, and form-link wiring
-- `google-apps-script/CreateForms.gs` — **run this once** to generate the Google Forms + Sheet
-- `google-apps-script/Code.gs` — legacy custom backend, optional, not required for this setup
-- `logo.png` — tournament logo
-- `payment-qr.jpeg` — PhonePe / UPI QR code shown on the Player Registration card
-- `team-logos/` — 12 team logos
+1. Open Google Drive using the Google account that should own the registration sheets and uploaded documents.
+2. Open your Apps Script project.
+3. Replace the complete Apps Script code with:
+
+   `google-apps-script/Code.gs`
+
+4. Save the project.
+
+## 2. Run `setupSheets` once
+
+In Apps Script:
+
+1. Select the function **`setupSheets`**.
+2. Click **Run**.
+3. Approve the requested Google Sheets / Drive permissions.
+4. Open the execution log. It will print:
+   - `PLAYER SHEET: ...`
+   - `FRANCHISE SHEET: ...`
+
+You should now have two separate spreadsheet files:
+
+- `Krantiveer Banda T10 — Player Registrations 2026`
+- `Krantiveer Banda T10 — Franchise Registrations 2026`
+
+It also creates two separate Drive folders:
+
+- `Krantiveer Banda T10 — Player Documents`
+- `Krantiveer Banda T10 — Franchise Documents`
+
+## 3. Deploy the corrected Apps Script Web App
+
+If this Apps Script project already has a Web App deployment:
+
+1. Go to **Deploy → Manage deployments**.
+2. Edit the existing Web App deployment.
+3. Deploy a **new version** of the same deployment.
+4. Keep the same `/exec` URL.
+
+Recommended settings:
+
+- **Execute as:** Me
+- **Who has access:** Anyone
+
+If this is a brand-new deployment, copy its `/exec` URL.
+
+## 4. Verify the Apps Script endpoint
+
+Open the `/exec` URL in your browser.
+
+You should see JSON similar to:
+
+`{"ok":true,"message":"Krantiveer Banda T10 registration backend is live."}`
+
+That confirms the Web App is deployed. The browser submission itself no longer uses `fetch()`, so the CORS redirect problem is avoided.
+
+## 5. Update the website endpoint
+
+In `index.html`, find:
+
+```js
+const APPS_SCRIPT_URL = "...";
+```
+
+Put your current Apps Script Web App `/exec` URL there.
+
+The current package already contains the previous `/exec` URL. Replace it only when your deployment URL is different.
+
+## 6. Upload this complete website package to Vercel
+
+Upload **all files and folders** from this package, including:
+
+- `index.html`
+- `styles.css`
+- `app.js`
+- `logo.png`
+- `payment-qr.jpeg`
+- `team-logos/`
+- `google-apps-script/`
+- `robots.txt`
+- `sitemap.xml`
+
+After deployment, use:
+
+`https://krantiveer-t10.com/`
+
+## 7. Test Player Registration
+
+Submit one test player registration.
+
+The website should show:
+
+**Registration received**
+
+with a registration ID such as:
+
+`KVB-PLY-...`
+
+Then check the separate Player spreadsheet. A new row should contain:
+
+- timestamp
+- registration ID
+- player details
+- cricket profile
+- T-shirt details
+- document URLs
+- ₹500 registration fee
+- UTR / Transaction ID
+- payment status
+
+## 8. Test Franchise Registration
+
+Submit one test franchise registration.
+
+The website should show:
+
+**Franchise enquiry received**
+
+with a registration ID such as:
+
+`KVB-FRN-...`
+
+Then check the separate Franchise spreadsheet.
+
+## 9. Important when changing Apps Script code later
+
+Do not create a random new Apps Script project every time.
+
+For normal code updates:
+
+**Apps Script → Deploy → Manage deployments → Edit → new version → Deploy**
+
+Keep the same Web App `/exec` URL so the live website continues using the same endpoint.
+
+## Final data flow
+
+### Player
+
+Website player form
+→ Apps Script Web App
+→ **Player Registrations 2026 spreadsheet**
+→ Player Documents folder
+
+### Franchise
+
+Website franchise form
+→ Apps Script Web App
+→ **Franchise Registrations 2026 spreadsheet**
+→ Franchise Documents folder
